@@ -1,6 +1,43 @@
 # Docmaker
 
-A Node.js DOCX generator for creating beautifully styled educational module documents. You feed it raw module content as a JS file, run one command, and get a fully styled Word document.
+A Node.js DOCX generator for creating beautifully styled educational module documents. Feed it raw content, run one command, get a fully styled Word document.
+
+---
+
+## Two Ways to Use This
+
+### 1. Setting Up from Scratch
+
+Follow the [Setup](#setup) section to clone and run the project locally.
+
+### 2. Just Generate a `current.js`
+
+If someone already has this project running and wants to generate a new module, skip to the [Block Components Reference](#block-components-reference) and [Typical Structure](#typical-currentjs-structure) sections — everything needed to write a perfect `current.js` is there.
+
+---
+
+## Setup
+
+### Prerequisites
+
+- Node.js >= 18
+- npm
+
+### Install
+
+```
+git clone https://github.com/Nubaise/Docmaker.git
+cd Docmaker
+npm install
+```
+
+### Run
+
+```
+node generate.js
+```
+
+Output: `output/module.docx`
 
 ---
 
@@ -9,14 +46,14 @@ A Node.js DOCX generator for creating beautifully styled educational module docu
 ```
 Docmaker/
 │
-├── generate.js          # Entry point — builds and outputs the DOCX
+├── generate.js          # Entry point — builds and outputs the DOCX (never edit this)
 │
 ├── framework/
-│   ├── blocks.js        # All reusable document components (heading, code block, table, etc.)
-│   └── theme.js         # All colors, fonts, and sizes — single source of truth
+│   ├── blocks.js        # All reusable document components
+│   └── theme.js         # All colors, fonts, sizes — single source of truth
 │
 ├── modules/
-│   └── current.js       # The module content to generate — THIS IS THE ONLY FILE YOU CHANGE
+│   └── current.js       # The module content — THIS IS THE ONLY FILE YOU CHANGE
 │
 ├── output/
 │   └── module.docx      # Generated output (gitignored)
@@ -27,46 +64,24 @@ Docmaker/
 
 ---
 
-## How It Works
+## Workflow
 
-1. You write (or generate) `modules/current.js` with the module content
+1. Write (or generate) `modules/current.js` with your module content
 2. Run `node generate.js`
-3. `output/module.docx` is created with full styling
+3. Open `output/module.docx` in Word
 
-```
-node generate.js
-→ output/module.docx
-```
-
----
-
-## The Only File You Ever Change
-
-### `modules/current.js`
-
-This file exports a single function that receives `blocks` and `children`:
-
-```js
-module.exports = (blocks, children) => {
-  children.push(
-    ...blocks.createModuleTitle("Module 0", "Networking Fundamentals"),
-  );
-  children.push(blocks.createPartHeading("1. What is a Network?"));
-  children.push(blocks.createBody("A network is..."));
-  // ... and so on
-};
-```
+**Only `modules/current.js` changes. Everything else is frozen.**
 
 ---
 
 ## Block Components Reference
 
-All blocks live in `framework/blocks.js`. Import is handled automatically.
+All blocks live in `framework/blocks.js`. They are passed into `current.js` automatically via the `blocks` argument.
 
-### ⚠️ Critical Rule
+### ⚠️ Critical Rule — Spread vs Push
 
-Some blocks return **arrays** and need the spread operator `...`
-Some blocks return a **single paragraph** and use plain `push`
+Some blocks return **arrays** and require the spread operator `...`
+Some blocks return a **single element** and use plain `push`
 
 | Block                                            | Returns | Usage                                                      |
 | ------------------------------------------------ | ------- | ---------------------------------------------------------- |
@@ -89,7 +104,7 @@ Some blocks return a **single paragraph** and use plain `push`
 
 ## Block Usage Examples
 
-### Module Title (navy banner)
+### Module Title — navy banner
 
 ```js
 children.push(
@@ -108,7 +123,7 @@ children.push(
 );
 ```
 
-### Headings (H1 → H2 → H3)
+### Headings
 
 ```js
 children.push(blocks.createPartHeading("1. Main Section")); // H1 — navy, large
@@ -122,11 +137,16 @@ children.push(blocks.createMinorHeading("Minor Topic")); // H3 — dark, smaller
 children.push(blocks.createBody("This is a paragraph of body text."));
 ```
 
-### Bullets and Numbered Lists
+### Bullet List
 
 ```js
 children.push(blocks.createBullet("First point"));
 children.push(blocks.createBullet("Nested point", 1)); // level 1 = indented
+```
+
+### Numbered List
+
+```js
 children.push(blocks.createNumbered("Step one"));
 children.push(blocks.createNumbered("Step two"));
 ```
@@ -140,7 +160,7 @@ children.push(
 );
 ```
 
-### Code Block (gray bg + blue left border + Courier New)
+### Code Block — gray bg + blue left border + Courier New
 
 ```js
 children.push(
@@ -152,7 +172,7 @@ children.push(
 );
 ```
 
-### Info Box (blue header + light blue body)
+### Info Box — blue header + light blue body
 
 ```js
 children.push(
@@ -163,7 +183,7 @@ children.push(
 );
 ```
 
-### Warning Box (red header + yellow body)
+### Warning Box — red header + yellow body
 
 ```js
 children.push(
@@ -184,7 +204,7 @@ children.push(
       ["Speed", "Fast", "Slow"], // rows
       ["Cost", "High", "Low"],
     ],
-    [3120, 3120, 3120], // optional col widths (must sum to 9360)
+    [3120, 3120, 3120], // col widths — must sum to 9360
   ),
 );
 ```
@@ -198,62 +218,7 @@ children.push(blocks.createSpacer(400)); // larger gap
 
 ---
 
-## Theme
-
-All colors and fonts are in `framework/theme.js`. Edit here to change the look globally.
-
-```js
-colors: {
-    h1: "1A3C5E",          // Deep navy  — Part headings
-    h2: "2E75B6",          // Medium blue — Sub headings
-    h3: "2C3E50",          // Dark slate  — Minor headings
-    codeBg: "F0F4F8",      // Code block background
-    infoBg: "F0F7FF",      // Info box background
-    warningBg: "FFF8E1",   // Warning box background
-    tableHeader: "2E75B6", // Table header row
-    tableRow: "EBF5FB",    // Table alternating row
-}
-
-fonts: {
-    heading: "Arial",
-    body: "Arial",
-    code: "Courier New",
-}
-```
-
----
-
-## Dependencies
-
-```json
-{
-  "docx": "^9.7.1", // DOCX generation
-  "jszip": "^3.x" // XML patching for Word navigation pane
-}
-```
-
-Install:
-
-```
-npm install
-```
-
----
-
-## How to Add a New Feature to blocks.js
-
-If you need a new block type (e.g. `createNoteBox`, `createDiagram`, `createCoverPage`):
-
-1. Add the function to `framework/blocks.js`
-2. Export it at the bottom of the file
-3. Use it in `modules/current.js`
-
-If the function returns multiple paragraphs, return an **array** and document it as requiring `...spread`.
-If it returns a single element, return it directly.
-
----
-
-## Typical current.js Structure
+## Typical `current.js` Structure
 
 Every module follows this pattern:
 
@@ -268,7 +233,7 @@ module.exports = (blocks, children) => {
     children.push(...blocks.createLearningObjectives([...]));
     children.push(blocks.createSpacer());
 
-    // 3. Parts (repeat for each section)
+    // 3. Parts — repeat for each section
     children.push(blocks.createPartHeading("1. Section Name"));
     children.push(blocks.createBody("..."));
     children.push(blocks.createSubHeading("Subsection"));
@@ -292,22 +257,58 @@ module.exports = (blocks, children) => {
     children.push(blocks.createSubHeading("Module N Summary"));
     children.push(blocks.createChecklistItem("..."));
 
-    // 7. Up Next box
+    // 7. Up Next
     children.push(...blocks.createInfoBox("📘 Up Next", "Module N+1 — ..."));
 };
 ```
 
 ---
 
-## Git History
+## Theme
 
+Edit `framework/theme.js` to change the look globally.
+
+```js
+colors: {
+    h1: "1A3C5E",          // Deep navy  — Part headings
+    h2: "2E75B6",          // Medium blue — Sub headings
+    h3: "2C3E50",          // Dark slate  — Minor headings
+    codeBg: "F0F4F8",      // Code block background
+    infoBg: "F0F7FF",      // Info box background
+    warningBg: "FFF8E1",   // Warning box background
+    tableHeader: "2E75B6", // Table header row
+    tableRow: "EBF5FB",    // Table alternating row
+}
+
+fonts: {
+    heading: "Arial",
+    body: "Arial",
+    code: "Courier New",
+}
 ```
-fix: resolve array nesting bug in multi-paragraph block components
-feat: wire numbering config, styles, and US Letter page size to document
-feat: add tables, code blocks, info/warning boxes, checklists, numbered lists
-feat: sync theme colors with Docker Module 3 reference doc
-feat: implement core document block components
-feat: add centralized document theme configuration
-feat: create initial document generator structure
-chore: initialize Node.js project with docx dependency
-```
+
+---
+
+## Adding New Block Types
+
+1. Add the function to `framework/blocks.js`
+2. Export it at the bottom
+3. Use it in `modules/current.js`
+
+If the function returns multiple paragraphs → return an **array**, use `...spread` when calling.
+If it returns one element → return directly, use plain `push`.
+
+---
+
+## Dependencies
+
+| Package       | Purpose                                       |
+| ------------- | --------------------------------------------- |
+| `docx@^9.7.1` | DOCX generation                               |
+| `jszip@^3.x`  | XML patching for Word navigation pane support |
+
+---
+
+## Example
+
+See `modules/current.js` in the repo — it's a full showcase of every block component rendered in one document.
