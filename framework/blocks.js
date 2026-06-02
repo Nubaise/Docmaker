@@ -1,6 +1,4 @@
 // framework/blocks.js
-// All reusable document components styled to match Docker_Fundamentals_Module3.docx
-
 const {
     Paragraph,
     TextRun,
@@ -20,7 +18,6 @@ const theme = require("./theme");
 
 // ─────────────────────────────────────────────
 // NUMBERING CONFIG
-// Export this and pass it into new Document({ numbering: ... })
 // ─────────────────────────────────────────────
 const numberingConfig = {
     config: [
@@ -92,7 +89,6 @@ const numberingConfig = {
 
 // ─────────────────────────────────────────────
 // STYLES CONFIG
-// Pass into new Document({ styles: ... })
 // ─────────────────────────────────────────────
 const stylesConfig = {
     default: {
@@ -119,7 +115,6 @@ const stylesConfig = {
             },
             paragraph: {
                 spacing: { before: 360, after: 180 },
-                outlineLevel: 0,
             },
         },
         {
@@ -136,7 +131,6 @@ const stylesConfig = {
             },
             paragraph: {
                 spacing: { before: 240, after: 120 },
-                outlineLevel: 1,
             },
         },
         {
@@ -153,45 +147,75 @@ const stylesConfig = {
             },
             paragraph: {
                 spacing: { before: 180, after: 90 },
-                outlineLevel: 2,
             },
         },
     ],
 };
 
 // ─────────────────────────────────────────────
-// TITLE BLOCKS
+// TITLE
 // ─────────────────────────────────────────────
 
 function createModuleTitle(moduleNumber, title) {
-    return new Paragraph({
-        alignment: AlignmentType.CENTER,
-        spacing: { before: 480, after: 480 },
-        shading: {
-            type: ShadingType.CLEAR,
-            fill: theme.colors.h1,
-        },
-        children: [
-            new TextRun({
-                text: moduleNumber,
-                bold: true,
-                size: 28,
-                font: theme.fonts.heading,
-                color: theme.colors.white,
-            }),
-            new TextRun({
-                text: "  —  " + title,
-                bold: true,
-                size: 32,
-                font: theme.fonts.heading,
-                color: theme.colors.white,
-            }),
-        ],
-    });
+    // Returns array — use children.push(...blocks.createModuleTitle(...))
+    return [
+        new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 0, after: 0 },
+            shading: { type: ShadingType.CLEAR, fill: theme.colors.h1 },
+            children: [
+                new TextRun({
+                    text: " ",
+                    size: 16,
+                    font: theme.fonts.heading,
+                }),
+            ],
+        }),
+        new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 0, after: 0 },
+            shading: { type: ShadingType.CLEAR, fill: theme.colors.h1 },
+            children: [
+                new TextRun({
+                    text: moduleNumber,
+                    bold: true,
+                    size: 28,
+                    font: theme.fonts.heading,
+                    color: theme.colors.white,
+                }),
+            ],
+        }),
+        new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 0, after: 0 },
+            shading: { type: ShadingType.CLEAR, fill: theme.colors.h1 },
+            children: [
+                new TextRun({
+                    text: title,
+                    bold: true,
+                    size: 40,
+                    font: theme.fonts.heading,
+                    color: theme.colors.white,
+                }),
+            ],
+        }),
+        new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 0, after: 400 },
+            shading: { type: ShadingType.CLEAR, fill: theme.colors.h1 },
+            children: [
+                new TextRun({
+                    text: " ",
+                    size: 16,
+                    font: theme.fonts.heading,
+                }),
+            ],
+        }),
+    ];
 }
 
 // ─────────────────────────────────────────────
-// HEADING BLOCKS
+// HEADINGS (return single Paragraph — safe to push directly)
 // ─────────────────────────────────────────────
 
 function createPartHeading(text) {
@@ -216,35 +240,23 @@ function createMinorHeading(text) {
 }
 
 // ─────────────────────────────────────────────
-// BODY TEXT
+// BODY & LISTS (single paragraph — safe to push directly)
 // ─────────────────────────────────────────────
 
 function createBody(text) {
     return new Paragraph({
         spacing: { after: 120 },
         children: [
-            new TextRun({
-                text,
-                size: theme.sizes.body,
-                font: theme.fonts.body,
-            }),
+            new TextRun({ text, size: theme.sizes.body, font: theme.fonts.body }),
         ],
     });
 }
-
-// ─────────────────────────────────────────────
-// LIST BLOCKS
-// ─────────────────────────────────────────────
 
 function createBullet(text, level = 0) {
     return new Paragraph({
         numbering: { reference: "bullets", level },
         children: [
-            new TextRun({
-                text,
-                size: theme.sizes.body,
-                font: theme.fonts.body,
-            }),
+            new TextRun({ text, size: theme.sizes.body, font: theme.fonts.body }),
         ],
     });
 }
@@ -253,11 +265,7 @@ function createNumbered(text) {
     return new Paragraph({
         numbering: { reference: "numbers", level: 0 },
         children: [
-            new TextRun({
-                text,
-                size: theme.sizes.body,
-                font: theme.fonts.body,
-            }),
+            new TextRun({ text, size: theme.sizes.body, font: theme.fonts.body }),
         ],
     });
 }
@@ -266,35 +274,35 @@ function createChecklistItem(text) {
     return new Paragraph({
         numbering: { reference: "checklist", level: 0 },
         children: [
-            new TextRun({
-                text,
-                size: theme.sizes.body,
-                font: theme.fonts.body,
-            }),
+            new TextRun({ text, size: theme.sizes.body, font: theme.fonts.body }),
         ],
+    });
+}
+
+function createSpacer(spacingAfter = 200) {
+    return new Paragraph({
+        spacing: { after: spacingAfter },
+        children: [new TextRun("")],
     });
 }
 
 // ─────────────────────────────────────────────
 // LEARNING OBJECTIVES (returns array)
-// Usage: createLearningObjectives([...]).forEach(x => children.push(x))
+// Usage: children.push(...blocks.createLearningObjectives([...]))
 // ─────────────────────────────────────────────
 
 function createLearningObjectives(items) {
-    const out = [];
-    out.push(createSubHeading("Learning Objectives"));
-    out.push(
-        createBody(
-            "By the end of this module, you should be able to:"
-        )
-    );
-    items.forEach(item => out.push(createBullet(item)));
-    return out;
+    return [
+        createSubHeading("Learning Objectives"),
+        createBody("By the end of this module, you should be able to:"),
+        ...items.map(item => createBullet(item)),
+    ];
 }
 
 // ─────────────────────────────────────────────
-// CODE BLOCK
-// Exact style from Module 3: F0F4F8 bg, Courier New, blue left border
+// CODE BLOCK (returns array)
+// Usage: children.push(...blocks.createCodeBlock(`...`))
+// Each line = its own paragraph (required for proper DOCX rendering)
 // ─────────────────────────────────────────────
 
 function createCodeBlock(code) {
@@ -331,36 +339,27 @@ function createCodeBlock(code) {
 }
 
 // ─────────────────────────────────────────────
-// INFO BOX (light blue)
+// INFO BOX — light blue (returns array)
+// Usage: children.push(...blocks.createInfoBox("💡 Tip", "text..."))
 // ─────────────────────────────────────────────
 
 function createInfoBox(label, text) {
-    const out = [];
-
-    if (label) {
-        out.push(
-            new Paragraph({
-                spacing: { before: 160, after: 0 },
-                shading: { type: ShadingType.CLEAR, fill: theme.colors.h2 },
-                children: [
-                    new TextRun({
-                        text: "  " + label,
-                        bold: true,
-                        color: theme.colors.white,
-                        font: theme.fonts.body,
-                        size: 20,
-                    }),
-                ],
-            })
-        );
-    }
-
-    out.push(
+    return [
         new Paragraph({
-            spacing: {
-                before: label ? 0 : 160,
-                after: 160,
-            },
+            spacing: { before: 200, after: 0 },
+            shading: { type: ShadingType.CLEAR, fill: theme.colors.h2 },
+            children: [
+                new TextRun({
+                    text: "  " + label,
+                    bold: true,
+                    color: theme.colors.white,
+                    font: theme.fonts.body,
+                    size: 20,
+                }),
+            ],
+        }),
+        new Paragraph({
+            spacing: { before: 0, after: 200 },
             shading: { type: ShadingType.CLEAR, fill: theme.colors.infoBg },
             children: [
                 new TextRun({
@@ -370,43 +369,32 @@ function createInfoBox(label, text) {
                     color: theme.colors.h1,
                 }),
             ],
-        })
-    );
-
-    return out;
+        }),
+    ];
 }
 
 // ─────────────────────────────────────────────
-// WARNING BOX (yellow)
+// WARNING BOX — yellow (returns array)
+// Usage: children.push(...blocks.createWarningBox("⚠ Warning", "text..."))
 // ─────────────────────────────────────────────
 
 function createWarningBox(label, text) {
-    const out = [];
-
-    if (label) {
-        out.push(
-            new Paragraph({
-                spacing: { before: 160, after: 0 },
-                shading: { type: ShadingType.CLEAR, fill: "E67E22" },
-                children: [
-                    new TextRun({
-                        text: "  ⚠  " + label,
-                        bold: true,
-                        color: theme.colors.white,
-                        font: theme.fonts.body,
-                        size: 20,
-                    }),
-                ],
-            })
-        );
-    }
-
-    out.push(
+    return [
         new Paragraph({
-            spacing: {
-                before: label ? 0 : 160,
-                after: 160,
-            },
+            spacing: { before: 200, after: 0 },
+            shading: { type: ShadingType.CLEAR, fill: "C0392B" },
+            children: [
+                new TextRun({
+                    text: "  " + label,
+                    bold: true,
+                    color: theme.colors.white,
+                    font: theme.fonts.body,
+                    size: 20,
+                }),
+            ],
+        }),
+        new Paragraph({
+            spacing: { before: 0, after: 200 },
             shading: { type: ShadingType.CLEAR, fill: theme.colors.warningBg },
             children: [
                 new TextRun({
@@ -416,17 +404,13 @@ function createWarningBox(label, text) {
                     color: "7D6608",
                 }),
             ],
-        })
-    );
-
-    return out;
+        }),
+    ];
 }
 
 // ─────────────────────────────────────────────
-// TABLE
-// headers: string[]        — column headers
-// rows: string[][]         — data rows (array of arrays)
-// colWidths: number[]      — optional DXA widths (must sum to 9360)
+// TABLE (returns Table — push directly)
+// Usage: children.push(blocks.createTable(headers, rows))
 // ─────────────────────────────────────────────
 
 function createTable(headers, rows, colWidths) {
@@ -441,25 +425,18 @@ function createTable(headers, rows, colWidths) {
         color: theme.colors.tableBorder,
     };
     const borders = {
-        top: border,
-        bottom: border,
-        left: border,
-        right: border,
-        insideHorizontal: border,
-        insideVertical: border,
+        top: border, bottom: border,
+        left: border, right: border,
+        insideHorizontal: border, insideVertical: border,
     };
 
-    // Header row
     const headerRow = new TableRow({
         tableHeader: true,
         children: headers.map((h, i) =>
             new TableCell({
                 width: { size: widths[i], type: WidthType.DXA },
                 borders,
-                shading: {
-                    type: ShadingType.CLEAR,
-                    fill: theme.colors.tableHeader,
-                },
+                shading: { type: ShadingType.CLEAR, fill: theme.colors.tableHeader },
                 margins: { top: 80, bottom: 80, left: 120, right: 120 },
                 verticalAlign: VerticalAlign.CENTER,
                 children: [
@@ -479,7 +456,6 @@ function createTable(headers, rows, colWidths) {
         ),
     });
 
-    // Data rows
     const dataRows = rows.map((row, ri) =>
         new TableRow({
             children: row.map((cell, ci) =>
@@ -488,9 +464,7 @@ function createTable(headers, rows, colWidths) {
                     borders,
                     shading: {
                         type: ShadingType.CLEAR,
-                        fill: ri % 2 === 0
-                            ? theme.colors.tableRow
-                            : theme.colors.tableRowAlt,
+                        fill: ri % 2 === 0 ? theme.colors.tableRow : theme.colors.tableRowAlt,
                     },
                     margins: { top: 80, bottom: 80, left: 120, right: 120 },
                     children: [
@@ -517,26 +491,12 @@ function createTable(headers, rows, colWidths) {
 }
 
 // ─────────────────────────────────────────────
-// SPACER
-// ─────────────────────────────────────────────
-
-function createSpacer(spacingAfter = 200) {
-    return new Paragraph({
-        spacing: { after: spacingAfter },
-        children: [new TextRun("")],
-    });
-}
-
-// ─────────────────────────────────────────────
 // EXPORTS
 // ─────────────────────────────────────────────
 
 module.exports = {
-    // Config objects (pass to Document constructor)
     numberingConfig,
     stylesConfig,
-
-    // Blocks
     createModuleTitle,
     createPartHeading,
     createSubHeading,
